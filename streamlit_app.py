@@ -1,22 +1,29 @@
 import streamlit as st
-import openai  # 기존의 `from openai import OpenAI` 대신 이걸 사용하세요
+from openai import OpenAI
 
-# OpenAI 키 입력
+# ✅ 세션 상태 초기화
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# ✅ 이미지 삽입 (선택 사항)
+st.image("image.png", caption="김경식의 영화대영화 감성으로 출발!", use_column_width=True)
+
+st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
+st.write("GPT-4.0 mini 기반으로 재밌는 드라마, 영화를 추천해드립니다. 기분 따라, 취향 따라 골라보세요!")
+
 openai_api_key = st.text_input("🔑 OpenAI API Key를 입력하세요", type="password")
 if not openai_api_key:
     st.info("OpenAI 키를 입력하시면 추천이 시작됩니다!", icon="🗝️")
 else:
-    openai.api_key = openai_api_key  # 이렇게 설정해줘야 함
+    client = OpenAI(api_key=openai_api_key)
 
-    # 추천 버튼 누르면 실행
-    if st.button("🍿 드라마 & 시네마 탐색 시작!"):
-        ...
-        # GPT 호출 (스트리밍 미지원이므로 수정!)
-        response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",  # 또는 "gpt-4", "gpt-3.5-turbo" 등
-            messages=st.session_state.messages,
-        )
-        result = response["choices"][0]["message"]["content"]
-        with st.chat_message("assistant"):
-            st.markdown(result)
-        st.session_state.messages.append({"role": "assistant", "content": result})
+    # 콘텐츠 종류
+    content_type = st.radio("🎞️ 보고 싶은 콘텐츠는?", ["드라마", "영화", "둘 다"])
+
+    # 장르
+    genre_options = ["로맨스", "스릴러", "코미디", "공포", "판타지", "SF", "액션", "감동"]
+    selected_genres = st.multiselect("🎭 좋아하는 장르를 골라보세요!", genre_options)
+
+    # 국가
+    country_options = ["한국_
+
