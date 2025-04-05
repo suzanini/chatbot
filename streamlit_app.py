@@ -1,19 +1,9 @@
 import streamlit as st
 from openai import OpenAI
-import os  # 파일 존재 여부를 확인하기 위해 추가
 
 # ✅ 세션 상태 초기화
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
-# ✅ 이미지 삽입 (선택 사항)
-# 사용자가 제공한 이미지 파일 경로
-image_path = r"C:\Users\mylap\Desktop\언니꼬\image.png"  # 경로에 파일 이름 추가 (image.png로 가정)
-if os.path.exists(image_path):
-    # use_column_width 대신 width 사용 (또는 None으로 설정)
-    st.image(image_path, caption="김경식의 영화대영화 감성으로 출발!", width=None)
-else:
-    st.warning(f"이미지 파일 '{image_path}'을 찾을 수 없습니다. 파일 경로를 확인해주세요!", icon="⚠️")
 
 # 제목과 설명
 st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
@@ -131,4 +121,3 @@ else:
             st.session_state.messages.append({"role": "assistant", "content": response})
         except Exception as e:
             st.error(f"랜덤 추천 중 오류가 발생했습니다: {str(e)}", icon="❌")
-
