@@ -9,10 +9,6 @@ if "messages" not in st.session_state:
 st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
 st.write("GPT-4.0 mini 기반으로 재밌는 드라마, 영화를 추천해드립니다. 기분 따라, 취향 따라 골라보세요! 🎥🍿")
 
-# ✅ 이미지 대신 텍스트와 이모지로 대체
-st.markdown("### 🎬 영화 전문가가 추천을 준비 중입니다! 🎥🍿")
-st.markdown("📋 영화 전문가가 칠판에 추천 목록을 준비하고 있어요! 잠시만 기다려주세요... 🎞️")
-
 # OpenAI API 키 입력
 openai_api_key = st.text_input("🔑 OpenAI API Key를 입력하세요", type="password")
 if not openai_api_key:
