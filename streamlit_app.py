@@ -1,80 +1,80 @@
 import streamlit as st
 from openai import OpenAI
+import requests
+from PIL import Image
+from io import BytesIO
 
-# Show title and description.
 st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
 st.write(
     "GPT-4.0 mini를 기반으로 재밌는 드라마, 영화를 추천해드립니다. "
     "드라마 & 시네마 천국으로 떠나 보아요"
 )
 
-# API 키 입력 받기
 openai_api_key = st.text_input("OpenAI API Key", type="password")
 if not openai_api_key:
     st.info("OpenAI 키를 입력하세요.", icon="🗝️")
 else:
-    # Create an OpenAI client.
     client = OpenAI(api_key=openai_api_key)
-    
-    # 콘텐츠 종류 선택
-    content_type = st.radio("보고 싶은 콘텐츠는?", ["드라마", "영화", "둘다"])
 
-    # 장르 선택
+    content_type = st.radio("보고 싶은 콘텐츠는?", ["드라마", "영화", "둘다"])
     genre_options = ["로맨스", "스릴러", "코미디", "공포", "판타지", "SF", "액션", "감동"]
     selected_genres = st.multiselect("좋아하는 장르를 골라보세요!", genre_options)
-
-    # 국가 선택
     country_options = ["한국", "미국", "일본", "다좋아"]
     selected_countries = st.multiselect("선호하는 나라를 골라보세요!", country_options)
 
-    # 세션 상태 초기화
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    # 버튼 클릭 시 추천 시작
+    if st.button("🎬🍿 드라마 & 시네마 탐색 🎬🍿"):
 
-    # 기존 메시지 출력
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        # 유저 선택 문장 생성
+        user_summary = f"저는 {content_type}를 좋아하고, "
+        user_summary += f"{' / '.join(selected_genres) if selected_genres else '모든 장르'} 장르를 선호하며, "
+        user_summary += f"{' / '.join(selected_countries) if selected_countries else '모든 국가'} 작품을 좋아해요."
+        st.markdown(f"💬 {user_summary}")
 
-    # 유저 입력
-    if prompt := st.chat_input("어떤 분위기의 작품을 찾고 계신가요?"):
-
-        # 프롬프트 생성
+        # 프롬프트 구성
         full_prompt = f"""
-        [유저 입력]
-        {prompt}
+        아래 조건에 맞는 {content_type}를 5개 추천해주세요.
 
-        [선택 정보]
-        콘텐츠 종류: {content_type}
-        선호 장르: {', '.join(selected_genres) if selected_genres else '선택 없음'}
-        선호 국가: {', '.join(selected_countries) if selected_countries else '선택 없음'}
+        [조건]
+        - 장르: {', '.join(selected_genres) if selected_genres else '모든 장르'}
+        - 국가: {', '.join(selected_countries) if selected_countries else '모든 국가'}
+        - 형식: 리스트
+        - 각 항목은 다음 정보 포함
+          1. 제목 (제작 연도는 괄호에 표기, 예: 사랑의 불시착(2019))
+          2. 간단한 설명 (5줄 이하)
 
-        [요청 조건]
-        - {content_type}를 최소 5개 추천해주세요.
-        - 각 추천에는 다음 정보를 포함해주세요:
-          1. 제목
-          2. 제작 연도
-          3. 간단한 설명 (5줄 이하)
-        - 리스트 형식으로 정리해주세요.
+        추천 시작!
         """
 
-        # 유저 메시지 저장
-        st.session_state.messages.append({"role": "user", "content": full_prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # GPT 응답 생성
+        # GPT 호출
+        messages = [{"role": "user", "content": full_prompt}]
         stream = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
+            messages=messages,
             stream=True,
         )
 
+        # 스트리밍 결과 표시
         with st.chat_message("assistant"):
             response = st.write_stream(stream)
 
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        
+        # GPT 응답을 세션에 저장
+        st.session_state.messages = [{"role": "user", "content": full_prompt},
+                                     {"role": "assistant", "content": response}]
+
+        # 첫 번째 추천 항목 제목 파싱
+        import re
+        first_item_match = re.search(r"\d\.\s*([^\(]+)\((\d{4})\)", response)
+        if first_item_match:
+            first_title = first_item_match.group(1).strip()
+            first_year = first_item_match.group(2).strip()
+            search_query = f"{first_title} {first_year} poster"
+
+            # 이미지 검색 (DuckDuckGo or Bing 등 API 필요. 예시로 Unsplash 사용)
+            try:
+                img_url = f"https://source.unsplash.com/featured/?{first_title.replace(' ', '%20')},movie"
+                response_img = requests.get(img_url)
+                img = Image.open(BytesIO(response_img.content))
+                st.image(img, caption=f"{first_title}({first_year}) 포스터 (예시 이미지)")
+            except:
+                st.warning("포스터 이미지를 불러오지 못했어요 😢")
