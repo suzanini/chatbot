@@ -1,8 +1,12 @@
 import streamlit as st
 from openai import OpenAI
 
+# 이미지 삽입 (맨 앞에 넣기)
+st.image("image.png", caption="김경식의 영화대영화 감성으로 출발!", use_column_width=True)
+
 st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
 st.write("GPT-4.0 mini 기반으로 재밌는 드라마, 영화를 추천해드립니다. 기분 따라, 취향 따라 골라보세요!")
+
 
 openai_api_key = st.text_input("🔑 OpenAI API Key를 입력하세요", type="password")
 if not openai_api_key:
