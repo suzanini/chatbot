@@ -1,6 +1,5 @@
 import streamlit as st
 from openai import OpenAI
-import os  # 파일 존재 여부를 확인하기 위해 추가
 
 # ✅ 세션 상태 초기화
 if "messages" not in st.session_state:
@@ -10,12 +9,11 @@ if "messages" not in st.session_state:
 st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
 st.write("GPT-4.0 mini 기반으로 재밌는 드라마, 영화를 추천해드립니다. 기분 따라, 취향 따라 골라보세요!")
 
-# ✅ 이미지 삽입 (요청된 위치에 추가)
-image_path = r"C:\Users\mylap\Desktop\hi\image"  # 요청된 경로와 파일 이름 반영
-if os.path.exists(image_path):
-    st.image(image_path, caption="영화와 드라마를 즐겨보세요!", width=None)
-else:
-    st.warning(f"이미지 파일 '{image_path}'을 찾을 수 없습니다. 파일 경로를 확인해주세요!", icon="⚠️")
+# ✅ 이미지 삽입: 영화 전문가가 칠판에 서서 설명하는 그림
+# 로컬 파일 대신 생성된 이미지를 삽입 (이미지 생성 후 삽입)
+st.image("https://cdn.pixabay.com/photo/2023/10/20/03/36/teacher-8328012_1280.jpg", 
+         caption="영화 전문가가 추천을 준비 중입니다!", 
+         width=None)
 
 # OpenAI API 키 입력
 openai_api_key = st.text_input("🔑 OpenAI API Key를 입력하세요", type="password")
