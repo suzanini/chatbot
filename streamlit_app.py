@@ -25,5 +25,86 @@ else:
     selected_genres = st.multiselect("🎭 좋아하는 장르를 골라보세요!", genre_options)
 
     # 국가
-    country_options = ["한국_
+    country_options = ["한국", "미국", "일본", "기타/다 좋아요"]
+    selected_countries = st.multiselect("🌍 선호하는 나라를 선택하세요!", country_options)
+
+    # 연도 필터
+    year_range = st.slider("📆 원하는 제작 연도 범위를 선택하세요!", 1895, 2025, (2000, 2025))
+
+    # 분위기 기반
+    mood_options = ["😊 힐링하고 싶어요", "😢 눈물 나는 게 좋아요", "😲 반전 있는 작품이 좋아요", "❤️ 설레는 분위기 원해요"]
+    selected_moods = st.multiselect("🎈 지금 기분에 어울리는 분위기를 골라보세요!", mood_options)
+
+    # 이전에 본 작품
+    seen_titles = st.text_input("👀 이미 본 작품이 있다면 입력해주세요! (예: 기생충, 더글로리)")
+
+    # 플랫폼 필터
+    platform_options = ["Netflix", "Disney+", "TVING", "웨이브", "왓챠", "관계없음"]
+    selected_platforms = st.multiselect("📺 자주 이용하는 플랫폼이 있나요?", platform_options)
+
+    # 추천 버튼
+    if st.button("🍿 드라마 & 시네마 탐색 시작!"):
+        user_summary = f"저는 {content_type}를 좋아하고요"
+        if selected_genres:
+            user_summary += f", {', '.join(selected_genres)} 장르를 좋아하고"
+        if selected_countries:
+            user_summary += f", {', '.join(selected_countries)} 작품을 선호해요"
+        if selected_moods:
+            user_summary += f", 분위기는 {' / '.join(selected_moods)} 느낌을 원해요"
+        if selected_platforms:
+            user_summary += f", 플랫폼은 {', '.join(selected_platforms)}를 자주 써요"
+        user_summary += f". 제작 연도는 {year_range[0]}년부터 {year_range[1]}년 사이로 보고 싶어요."
+
+        st.chat_message("user").markdown(user_summary)
+
+        prompt = f"""
+        [사용자 취향 요약]
+        {user_summary}
+
+        [추가 정보]
+        이미 본 작품: {seen_titles if seen_titles else "없음"}
+
+        [요청 조건]
+        - {content_type}를 최소 5개 추천해주세요.
+        - 제목(연도), 간단한 설명(5줄 이하), 분위기 키워드를 포함해주세요.
+        - 중복 추천 없이 다양한 스타일을 보여주세요.
+        - 카드 형식 리스트로 깔끔하게 정리해주세요.
+        """
+
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        stream = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=st.session_state.messages,
+            stream=True,
+        )
+
+        with st.chat_message("assistant"):
+            response = st.write_stream(stream)
+
+        st.session_state.messages.append({"role": "assistant", "content": response})
+
+    # 랜덤 추천 기능
+    if st.button("🎲 오늘의 랜덤 추천 받기!"):
+        random_prompt = """
+        [요청]
+        - 장르, 국가, 플랫폼 관계없이 랜덤하게 드라마나 영화를 1편 추천해주세요.
+        - 포맷:
+            🎬 제목(연도)
+            - 💬 간단한 설명 (5줄 이내)
+            - 💡 분위기 키워드 2~3개
+        """
+
+        st.session_state.messages.append({"role": "user", "content": random_prompt})
+
+        stream = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=st.session_state.messages,
+            stream=True,
+        )
+
+        with st.chat_message("assistant"):
+            response = st.write_stream(stream)
+
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
