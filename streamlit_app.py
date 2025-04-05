@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+import os  # 파일 존재 여부를 확인하기 위해 추가
 
 # ✅ 세션 상태 초기화
 if "messages" not in st.session_state:
@@ -8,6 +9,13 @@ if "messages" not in st.session_state:
 # 제목과 설명
 st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
 st.write("GPT-4.0 mini 기반으로 재밌는 드라마, 영화를 추천해드립니다. 기분 따라, 취향 따라 골라보세요!")
+
+# ✅ 이미지 삽입 (요청된 위치에 추가)
+image_path = r"C:\Users\mylap\Desktop\hi\image.png"  # 요청된 경로와 파일 이름 반영
+if os.path.exists(image_path):
+    st.image(image_path, caption="영화와 드라마를 즐겨보세요!", width=None)
+else:
+    st.warning(f"이미지 파일 '{image_path}'을 찾을 수 없습니다. 파일 경로를 확인해주세요!", icon="⚠️")
 
 # OpenAI API 키 입력
 openai_api_key = st.text_input("🔑 OpenAI API Key를 입력하세요", type="password")
@@ -74,9 +82,10 @@ else:
 
             [요청 조건]
             - {content_type}를 최소 5개 추천해주세요.
-            - 제목(연도), 간단한 설명(5줄 이하), 분위기 키워드를 포함해주세요.
+            - 제목(연도), 간단한 설명(5줄 이하), 분위기 키워드, 그리고 이 콘텐츠를 볼 수 있는 플랫폼(예: Netflix, Disney+, TVING 등)을 포함해주세요.
             - 중복 추천 없이 다양한 스타일을 보여주세요.
             - 카드 형식 리스트로 깔끔하게 정리해주세요.
+            - 플랫폼 정보는 정확하고 최신 정보를 기반으로 제공해주세요.
             """
 
             st.session_state.messages.append({"role": "user", "content": prompt})
@@ -104,6 +113,8 @@ else:
             🎬 제목(연도)
             - 💬 간단한 설명 (5줄 이내)
             - 💡 분위기 키워드 2~3개
+            - 📺 볼 수 있는 플랫폼 (예: Netflix, Disney+, TVING 등)
+        - 플랫폼 정보는 정확하고 최신 정보를 기반으로 제공해주세요.
         """
 
         st.session_state.messages.append({"role": "user", "content": random_prompt})
