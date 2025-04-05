@@ -11,7 +11,7 @@ st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
 st.write("GPT-4.0 mini 기반으로 재밌는 드라마, 영화를 추천해드립니다. 기분 따라, 취향 따라 골라보세요!")
 
 # ✅ 이미지 삽입 (요청된 위치에 추가)
-image_path = r"C:\Users\mylap\Desktop\hi\image.png"  # 요청된 경로와 파일 이름 반영
+image_path = r"C:\Users\mylap\Desktop\hi\image"  # 요청된 경로와 파일 이름 반영
 if os.path.exists(image_path):
     st.image(image_path, caption="영화와 드라마를 즐겨보세요!", width=None)
 else:
