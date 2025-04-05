@@ -7,13 +7,11 @@ if "messages" not in st.session_state:
 
 # 제목과 설명
 st.title("🎬🎬 드라마 & 시네마 천국 🎬🎬")
-st.write("GPT-4.0 mini 기반으로 재밌는 드라마, 영화를 추천해드립니다. 기분 따라, 취향 따라 골라보세요!")
+st.write("GPT-4.0 mini 기반으로 재밌는 드라마, 영화를 추천해드립니다. 기분 따라, 취향 따라 골라보세요! 🎥🍿")
 
-# ✅ 이미지 삽입: 영화 전문가가 칠판에 서서 설명하는 그림
-# 로컬 파일 대신 생성된 이미지를 삽입 (이미지 생성 후 삽입)
-st.image("https://cdn.pixabay.com/photo/2023/10/20/03/36/teacher-8328012_1280.jpg", 
-         caption="영화 전문가가 추천을 준비 중입니다!", 
-         width=None)
+# ✅ 이미지 대신 텍스트와 이모지로 대체
+st.markdown("### 🎬 영화 전문가가 추천을 준비 중입니다! 🎥🍿")
+st.markdown("📋 영화 전문가가 칠판에 추천 목록을 준비하고 있어요! 잠시만 기다려주세요... 🎞️")
 
 # OpenAI API 키 입력
 openai_api_key = st.text_input("🔑 OpenAI API Key를 입력하세요", type="password")
